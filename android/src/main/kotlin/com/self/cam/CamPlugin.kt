@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -52,11 +54,13 @@ class CamPlugin : MethodChannel.MethodCallHandler, PluginRegistry.ActivityResult
             return;
         } else if (call.method.equals("share")) {
             val path = Uri.parse(call.argument<String>("path"));
+
             val intent = Intent(
                 Intent.ACTION_SEND,
                 MediaStore.getMediaUri(activity!!.applicationContext, path!!)
             )
-            intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             activity!!.applicationContext.startActivity(intent)
             result.success(1)
             return;
@@ -69,6 +73,7 @@ class CamPlugin : MethodChannel.MethodCallHandler, PluginRegistry.ActivityResult
             intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
             activity!!.applicationContext.startActivity(intent)
             result.success(1)
+            return;
             return;
         } else if (call.method.equals("getImage")) {
             try {
